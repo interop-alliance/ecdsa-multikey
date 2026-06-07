@@ -1,8 +1,7 @@
 /*!
  * Copyright (c) 2022-2023 Digital Bazaar, Inc. All rights reserved.
  */
-import * as base58 from 'base58-universal'
-import * as base64url from 'base64url-universal'
+import { base58btc as base58, base64url } from './baseX.js'
 import {
   ALGORITHM,
   ECDSA_CURVE,

@@ -8,12 +8,9 @@ importers:
 
   .:
     dependencies:
-      base58-universal:
-        specifier: ^2.0.0
-        version: 2.0.0
-      base64url-universal:
-        specifier: ^2.0.0
-        version: 2.0.0
+      '@scure/base':
+        specifier: ^2.2.0
+        version: 2.2.0
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
@@ -271,6 +268,9 @@ packages:
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
 
+  '@scure/base@2.2.0':
+    resolution: {integrity: sha512-b8XEupJibegiXV+tDUseI8oLQc8ei3d/4Jkb2RpbHh3MfE054ov3uIz2dhFkB3FI8iwYkEh0gGCApkrYggkPNg==}
+
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
@@ -415,18 +415,6 @@ packages:
   balanced-match@4.0.4:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
     engines: {node: 18 || 20 || >=22}
-
-  base58-universal@2.0.0:
-    resolution: {integrity: sha512-BgkgF8zVLOAygszG4W8NkLm7iXrw80VYAOcedrzANrIhS14+4W6zVqjyGTFUBM/FpqkHUt8aAYd4DbBBfn3zKg==}
-    engines: {node: '>=14'}
-
-  base64url-universal@2.0.0:
-    resolution: {integrity: sha512-6Hpg7EBf3t148C3+fMzjf+CHnADVDafWzlJUXAqqqbm4MKNXbsoPdOkWeRTjNlkYG7TpyjIpRO1Gk0SnsFD1rw==}
-    engines: {node: '>=14'}
-
-  base64url@3.0.1:
-    resolution: {integrity: sha512-ir1UPr3dkwexU7FdV8qBBbNDRUhMmIekYMFZfi+C/sLNnRESKPl23nB9b2pltqfOQNnGzsDdId90AEtG5tCx4A==}
-    engines: {node: '>=6.0.0'}
 
   brace-expansion@5.0.6:
     resolution: {integrity: sha512-kLpxurY4Z4r9sgMsyG0Z9uzsBlgiU/EFKhj/h91/8yHu0edo7XuixOIH3VcJ8kkxs6/jPzoI6U9Vj3WqbMQ94g==}
@@ -1163,6 +1151,8 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
+  '@scure/base@2.2.0': {}
+
   '@standard-schema/spec@1.1.0': {}
 
   '@tybys/wasm-util@0.10.2':
@@ -1355,14 +1345,6 @@ snapshots:
       js-tokens: 10.0.0
 
   balanced-match@4.0.4: {}
-
-  base58-universal@2.0.0: {}
-
-  base64url-universal@2.0.0:
-    dependencies:
-      base64url: 3.0.1
-
-  base64url@3.0.1: {}
 
   brace-expansion@5.0.6:
     dependencies:

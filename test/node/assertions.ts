@@ -1,8 +1,8 @@
 /*!
  * Copyright (c) 2023-2024 Digital Bazaar, Inc.
  */
-import * as base58 from 'base58-universal'
 import { it, expect, beforeAll } from 'vitest'
+import { base58btc as base58 } from '../../src/baseX.js'
 import * as EcdsaMultikey from '../../src/index.js'
 import { stringToUint8Array } from './text-encoder.js'
 import { CryptoKey, webcrypto } from '../../src/crypto.js'
