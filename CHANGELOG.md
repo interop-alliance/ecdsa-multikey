@@ -2,6 +2,19 @@
 
 ## 1.8.1 - TBD
 
+### Added
+
+- Test-only: added known-answer JWK vectors for the existing mock keys
+  (asserting exact `toJwk()` encodings and `fromJwk()` round-trips), imported
+  the Project Wycheproof IEEE P1363 ECDSA verification vectors for
+  P-256/P-384/P-521 to exercise the verifier against externally-produced and
+  malformed signatures, and added negative-path tests covering the library's
+  error branches (invalid curve/multibase/JWK inputs, curve mismatches,
+  unsupported key types and contexts) plus positive-path branch tests for
+  optional inputs (`controller`-derived `id`, `fromJwk` `id`/`controller`,
+  `includeContext`/secret-only export, array `@context`). No library behavior or
+  public API changes.
+
 ### Changed
 
 - **Infrastructure only; no library behavior, public API, or return-shape
