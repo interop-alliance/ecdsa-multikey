@@ -29,8 +29,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "base58-universal": "^2.0.0",
-    "base64url-universal": "^2.0.0"
+    "@scure/base": "^2.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

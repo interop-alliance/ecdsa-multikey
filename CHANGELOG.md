@@ -17,6 +17,9 @@
 
 ### Changed
 
+- Replaced the `base58-universal` and `base64url-universal` dependencies with
+  `@scure/base` (via a small `src/baseX.ts` wrapper). No library behavior or
+  public API changes.
 - **Infrastructure only; no library behavior, public API, or return-shape
   changes.** Migrated the build/test toolchain to the `isomorphic-lib-template`:
   pnpm (replacing npm), Vite/Vitest for Node tests (replacing Mocha/Chai/c8),
