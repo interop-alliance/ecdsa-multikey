@@ -1,6 +1,6 @@
 # EcdsaMultikey Key Pair Library for Linked Data _(@digitalbazaar/ecdsa-multikey)_
 
-[![Node.js CI](https://github.com/digitalbazaar/ecdsa-multikey/workflows/Node.js%20CI/badge.svg)](https://github.com/digitalbazaar/ecdsa-multikey/actions?query=workflow%3A%22Node.js+CI%22)
+[![CI](https://github.com/digitalbazaar/ecdsa-multikey/actions/workflows/ci.yml/badge.svg)](https://github.com/digitalbazaar/ecdsa-multikey/actions/workflows/ci.yml)
 [![NPM Version](https://img.shields.io/npm/v/@digitalbazaar/ecdsa-multikey.svg)](https://npm.im/@digitalbazaar/ecdsa-multikey)
 
 > Javascript library for generating and working with EcdsaMultikey key pairs.
@@ -19,13 +19,16 @@
 
 For use with:
 
-* [`@digitalbazaar/ecdsa-2019-cryptosuite`](https://github.com/digitalbazaar/ecdsa-2019-cryptosuite) `^1.0.0`
-  crypto suite (with [`jsonld-signatures`](https://github.com/digitalbazaar/jsonld-signatures) `^11.0.0`)
-* [`@digitalbazaar/data-integrity`](https://github.com/digitalbazaar/data-integrity) `^1.0.0`
+- [`@digitalbazaar/ecdsa-2019-cryptosuite`](https://github.com/digitalbazaar/ecdsa-2019-cryptosuite)
+  `^1.0.0` crypto suite (with
+  [`jsonld-signatures`](https://github.com/digitalbazaar/jsonld-signatures)
+  `^11.0.0`)
+- [`@digitalbazaar/data-integrity`](https://github.com/digitalbazaar/data-integrity)
+  `^1.0.0`
 
 See also (related specs):
 
-* [Verifiable Credential Data Integrity](https://w3c.github.io/vc-data-integrity/)
+- [Verifiable Credential Data Integrity](https://w3c.github.io/vc-data-integrity/)
 
 ## Security
 
@@ -34,14 +37,21 @@ your system will largely depend on your design decisions.
 
 ## Install
 
-- Node.js 16+ is required.
+- Node.js 24+ is required.
+- This package is built with [pnpm](https://pnpm.io/).
+
+To install as a dependency:
+
+```
+npm install @digitalbazaar/ecdsa-multikey
+```
 
 To install locally (for development):
 
 ```
 git clone https://github.com/digitalbazaar/ecdsa-multikey.git
 cd ecdsa-multikey
-npm install
+pnpm install
 ```
 
 ## Usage
@@ -50,16 +60,17 @@ npm install
 
 To generate a new public/secret key pair:
 
-* `{string} [curve]` \[Required\] ECDSA curve used to generate the key:
+- `{string} [curve]` \[Required\] ECDSA curve used to generate the key:
   \['P-256', 'P-384', 'P-521'\].
-* `{string} [id]` \[Optional\] ID for the generated key.
-* `{string} [controller]` \[Optional\] Controller URI or DID to initialize the
-  generated key. (This will be used to generate `id` if it is not explicitly defined.)
+- `{string} [id]` \[Optional\] ID for the generated key.
+- `{string} [controller]` \[Optional\] Controller URI or DID to initialize the
+  generated key. (This will be used to generate `id` if it is not explicitly
+  defined.)
 
 ```js
-import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey';
+import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey'
 
-const keyPair = await EcdsaMultikey.generate({curve: 'P-384'});
+const keyPair = await EcdsaMultikey.generate({ curve: 'P-384' })
 ```
 
 ### Importing a key pair from storage
@@ -71,7 +82,7 @@ storage, use `.from()`:
 const serializedKeyPair = { ... };
 
 const keyPair = await EcdsaMultikey.from(serializedKeyPair);
-````
+```
 
 ### Exporting the public key only
 
@@ -111,14 +122,14 @@ In order to perform a cryptographic signature, you need to create a `sign`
 function, and then invoke it.
 
 ```js
-const keyPair = EcdsaMultikey.generate({curve: 'P-256'});
+const keyPair = EcdsaMultikey.generate({ curve: 'P-256' })
 
-const {sign} = keyPair.signer();
+const { sign } = keyPair.signer()
 
 // data is a Uint8Array of bytes
-const data = (new TextEncoder()).encode('test data goes here');
+const data = new TextEncoder().encode('test data goes here')
 // Signing also outputs a Uint8Array, which you can serialize to text etc.
-const signature = await sign({data});
+const signature = await sign({ data })
 ```
 
 ### Creating a verifier function
@@ -127,17 +138,18 @@ In order to verify a cryptographic signature, you need to create a `verify`
 function, and then invoke it (passing it the data to verify, and the signature).
 
 ```js
-const keyPair = EcdsaMultikey.generate({curve: 'P-521'});
+const keyPair = EcdsaMultikey.generate({ curve: 'P-521' })
 
-const {verify} = keyPair.verifier();
+const { verify } = keyPair.verifier()
 
-const valid = await verify({data, signature});
+const valid = await verify({ data, signature })
 // true
 ```
 
 ## Contribute
 
-See [the contribute file](https://github.com/digitalbazaar/bedrock/blob/master/CONTRIBUTING.md)!
+See
+[the contribute file](https://github.com/digitalbazaar/bedrock/blob/master/CONTRIBUTING.md)!
 
 PRs accepted.
 
@@ -146,8 +158,8 @@ If editing the Readme, please conform to the
 
 ## Commercial Support
 
-Commercial support for this library is available upon request from
-Digital Bazaar: support@digitalbazaar.com
+Commercial support for this library is available upon request from Digital
+Bazaar: support@digitalbazaar.com
 
 ## License
 

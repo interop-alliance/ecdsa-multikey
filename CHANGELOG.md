@@ -1,49 +1,74 @@
 # @digitalbazaar/ecdsa-multikey ChangeLog
 
+## 1.8.1 - TBD
+
+### Changed
+
+- **Infrastructure only; no library behavior, public API, or return-shape
+  changes.** Migrated the build/test toolchain to the `isomorphic-lib-template`:
+  pnpm (replacing npm), Vite/Vitest for Node tests (replacing Mocha/Chai/c8),
+  Playwright for the browser smoke test (replacing Karma/webpack), ESLint flat
+  config + Prettier 3 (replacing `eslint-config-digitalbazaar`), and a
+  single-entry `tsc` build to `dist/`.
+- Converted the source from JavaScript (`lib/*.js`) to TypeScript (`src/*.ts`).
+  The package now ships compiled output and type declarations from `dist/`, with
+  conditional `exports`. The `node:crypto` vs `globalThis.crypto` browser swap
+  is preserved via the `browser` field.
+- Raised the minimum Node.js version to `>= 24`.
+- The TypeScript build runs under full `strict` mode, including
+  `verbatimModuleSyntax` and `noUncheckedIndexedAccess`.
+
 ## 1.8.0 - 2024-10-02
 
 ### Added
+
 - Include `id` and `controller` properties when importing key types of
   `JsonWebKey` or `JsonWebKey2020`.
 
 ## 1.7.0 - 2024-03-17
 
 ### Added
+
 - Add conversion from `publicKeyJwk` feature via `from()`.
 
 ### Changed
+
 - Expect >= node 18 via `package.json`.
 
 ### Fixed
+
 - Allow `@context` array values in multikeys.
 
 ## 1.6.0 - 2023-11-07
 
 ### Added
-- Add `fromRaw()` to import a key pair from a named `curve`, `secretKey`,
-  and `publicKey`.
-- Reformat `keyAgreement` param in `from()` to `options` to enable named
-  usage (`{keyAgreement: true|false}`) for better API.
+
+- Add `fromRaw()` to import a key pair from a named `curve`, `secretKey`, and
+  `publicKey`.
+- Reformat `keyAgreement` param in `from()` to `options` to enable named usage
+  (`{keyAgreement: true|false}`) for better API.
 
 ## 1.5.0 - 2023-11-05
 
 ### Added
+
 - Rename `remotePublicKey` param to `publicKey` for `deriveSecret()` to get
-  better compatibility with WebKMS Client KeyAgreementKey interface. The
-  param can still be passed as `remotePublicKey` but this is considered
-  deprecated.
+  better compatibility with WebKMS Client KeyAgreementKey interface. The param
+  can still be passed as `remotePublicKey` but this is considered deprecated.
 
 ## 1.4.0 - 2023-11-05
 
 ### Added
+
 - Add `raw` option to key pair `export()`. Based on the requested public/secret
-  key, the output will include the raw bytes for the public/secret key using
-  the properties `publicKey` and/or `secretKey`, respectively. The public key
-  will be output using the compressed format.
+  key, the output will include the raw bytes for the public/secret key using the
+  properties `publicKey` and/or `secretKey`, respectively. The public key will
+  be output using the compressed format.
 
 ## 1.3.0 - 2023-10-31
 
 ### Added
+
 - Add `keyAgreement` option to `generate()` to generate ECDH keys instead of
   ECDSA keys. This module needs a better name than `ecdsa-multikey` as it also
   supports key agreement keys, but only for keys based on curves that are also
@@ -56,36 +81,43 @@
 ## 1.2.1 - 2023-10-30
 
 ### Fixed
+
 - Do not include `ext` or `key_ops` in output JWK.
 
 ## 1.2.0 - 2023-10-30
 
 ### Added
+
 - Add `fromJwk()` and `toJwk()` for importing / exporting key pairs using JWK.
 
 ## 1.1.3 - 2023-05-19
 
 ### Fixed
+
 - Support Node.js 20.x.
 
 ## 1.1.2 - 2023-04-14
 
 ### Fixed
+
 - Update `.from()` method to not modify key input.
 
 ## 1.1.1 - 2023-03-11
 
 ### Fixed
+
 - Fix data format alignment issues with ecdsa-2019-cryptosuite.
 - Use constant strings in tests.
 
 ## 1.1.0 - 2023-03-06
 
 ### Changed
+
 - Ensure public and secret multikey headers match.
 - Change exported algorithm from "ECDSA" to curve name.
 
 ## 1.0.0 - 2023-02-27
 
 ### Added
+
 - Initial version.
