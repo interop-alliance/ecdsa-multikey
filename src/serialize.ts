@@ -17,7 +17,7 @@ import {
   setPublicKeyHeader,
   setSecretKeyHeader
 } from './helpers.js'
-import type { Jwk, Multikey, WebCryptoKey } from './types.js'
+import type { KeyDocument, WebCryptoKey } from './types.js'
 
 // a key pair whose keys have been imported into WebCrypto
 export interface ImportedKeyPair {
@@ -143,7 +143,7 @@ export async function exportKeyPair({
   secretKey?: boolean
   publicKey?: boolean
   includeContext?: boolean
-}): Promise<Multikey> {
+}): Promise<KeyDocument> {
   if (!(publicKey || secretKey)) {
     throw new TypeError(
       'Export requires specifying either "publicKey" or "secretKey".'
@@ -153,10 +153,10 @@ export async function exportKeyPair({
   // get JWK
   const useSecretKey = secretKey && !!keyPair.secretKey
   const cryptoKey = useSecretKey ? keyPair.secretKey! : keyPair.publicKey
-  const jwk = (await webcrypto.subtle.exportKey('jwk', cryptoKey)) as Jwk
+  const jwk = await webcrypto.subtle.exportKey('jwk', cryptoKey)
 
   // export as Multikey
-  const exported: Multikey = {}
+  const exported: KeyDocument = {}
   if (includeContext) {
     exported['@context'] = MULTIKEY_CONTEXT_V1_URL
   }
@@ -266,7 +266,7 @@ export async function importKeyPair({
   return keyPair
 }
 
-export function toPublicKeyBytes({ jwk }: { jwk: Jwk }): Uint8Array {
+export function toPublicKeyBytes({ jwk }: { jwk: JsonWebKey }): Uint8Array {
   if (jwk?.kty !== 'EC') {
     throw new TypeError('"jwk.kty" must be "EC".')
   }
@@ -287,7 +287,7 @@ export function toPublicKeyBytes({ jwk }: { jwk: Jwk }): Uint8Array {
   return publicKey
 }
 
-export function toPublicKeyMultibase({ jwk }: { jwk: Jwk }): string {
+export function toPublicKeyMultibase({ jwk }: { jwk: JsonWebKey }): string {
   if (jwk?.kty !== 'EC') {
     throw new TypeError('"jwk.kty" must be "EC".')
   }
@@ -311,7 +311,7 @@ export function toPublicKeyMultibase({ jwk }: { jwk: Jwk }): string {
   return publicKeyMultibase
 }
 
-export function toSecretKeyBytes({ jwk }: { jwk: Jwk }): Uint8Array {
+export function toSecretKeyBytes({ jwk }: { jwk: JsonWebKey }): Uint8Array {
   if (jwk?.kty !== 'EC') {
     throw new TypeError('"jwk.kty" must be "EC".')
   }
@@ -324,7 +324,7 @@ export function toSecretKeyBytes({ jwk }: { jwk: Jwk }): Uint8Array {
   return secretKey
 }
 
-export function toSecretKeyMultibase({ jwk }: { jwk: Jwk }): string {
+export function toSecretKeyMultibase({ jwk }: { jwk: JsonWebKey }): string {
   if (jwk?.kty !== 'EC') {
     throw new TypeError('"jwk.kty" must be "EC".')
   }

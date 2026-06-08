@@ -8,7 +8,7 @@ import {
   ECDSA_2019_SUITE_CONTEXT_V1_URL,
   MULTIKEY_CONTEXT_V1_URL
 } from './constants.js'
-import type { JsonLdContext, Multikey } from './types.js'
+import type { JsonLdContext, KeyDocument } from './types.js'
 
 // valid ECDSA types
 const VALID_ECDSA_TYPES = new Set<string>([
@@ -21,8 +21,8 @@ const VALID_ECDSA_TYPES = new Set<string>([
 export async function toMultikey({
   keyPair
 }: {
-  keyPair: Multikey
-}): Promise<Multikey> {
+  keyPair: KeyDocument
+}): Promise<KeyDocument> {
   if (!VALID_ECDSA_TYPES.has(keyPair.type as string)) {
     throw new TypeError(`Unsupported key type "${keyPair.type}".`)
   }

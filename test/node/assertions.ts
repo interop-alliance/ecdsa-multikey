@@ -8,17 +8,22 @@ import { stringToUint8Array } from './text-encoder.js'
 import { CryptoKey, webcrypto } from '../../src/crypto.js'
 import { exportKeyPair } from '../../src/serialize.js'
 import { getNamedCurveFromPublicMultikey } from '../../src/helpers.js'
-import type { Multikey, Signer, Verifier } from '../../src/index.js'
+import type { EcdsaCurve } from '../../src/index.js'
+import type {
+  IMultikeyDocument,
+  ISigner,
+  IVerifier
+} from '@interop/data-integrity-core'
 
 export function testSignVerify({
   id,
   serializedKeyPair
 }: {
   id: string
-  serializedKeyPair: Multikey
+  serializedKeyPair: IMultikeyDocument
 }) {
-  let signer: Signer
-  let verifier: Verifier
+  let signer: ISigner
+  let verifier: IVerifier
   beforeAll(async function () {
     const keyPair = await EcdsaMultikey.from({
       id,
@@ -57,8 +62,8 @@ export function testAlgorithm({
   serializedKeyPair,
   keyType
 }: {
-  serializedKeyPair: Multikey
-  keyType: string
+  serializedKeyPair: IMultikeyDocument
+  keyType: EcdsaCurve
 }) {
   it('signer() instance should export proper algorithm', async () => {
     const keyPair = await EcdsaMultikey.from(serializedKeyPair)
@@ -78,7 +83,7 @@ export function testGenerate({
   secretKeyByteLength = 34,
   publicKeyByteLength = 35
 }: {
-  curve: string
+  curve: EcdsaCurve
   decoder?: { decode(input: string): Uint8Array }
   secretKeyByteLength?: number
   publicKeyByteLength?: number
@@ -114,7 +119,7 @@ export function testGenerate({
   })
 }
 
-export function testExport({ curve }: { curve: string }) {
+export function testExport({ curve }: { curve: EcdsaCurve }) {
   it('should export id, type and key material', async () => {
     const keyPair = await EcdsaMultikey.generate({
       id: '4e0db4260c87cc200df3',
@@ -199,9 +204,9 @@ export function testFrom({
   id,
   keyType
 }: {
-  serializedKeyPair: Multikey
+  serializedKeyPair: IMultikeyDocument
   id: string
-  keyType: string
+  keyType: EcdsaCurve
 }) {
   it('should auto-set key.id based on controller', async () => {
     const { publicKeyMultibase } = serializedKeyPair
@@ -262,7 +267,7 @@ export function testFrom({
   })
 }
 
-export function testJWK({ curve }: { curve: string }) {
+export function testJWK({ curve }: { curve: EcdsaCurve }) {
   it('should round-trip secret JWKs', async () => {
     const keyPair = await EcdsaMultikey.generate({
       id: '4e0db4260c87cc200df3',
@@ -294,7 +299,7 @@ export function testJWK({ curve }: { curve: string }) {
   })
 }
 
-export function testRaw({ curve }: { curve: string }) {
+export function testRaw({ curve }: { curve: EcdsaCurve }) {
   it('should import raw public key', async () => {
     const keyPair = await EcdsaMultikey.generate({ curve })
 
