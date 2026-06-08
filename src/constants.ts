@@ -48,3 +48,68 @@ export const ECDSA_HASH = {
 
 // An ECDSA curve name supported by this library.
 export type EcdsaCurve = (typeof ECDSA_CURVE)[keyof typeof ECDSA_CURVE]
+
+// The default curve used by `generate()` when none is specified. P-256 has the
+// broadest interop and best performance; choose a larger curve only when a
+// policy/compliance requirement (e.g. CNSA mandates P-384) calls for it.
+export const DEFAULT_ECDSA_CURVE: EcdsaCurve = ECDSA_CURVE.P256
+
+// Per-curve metadata, to help callers pick and consume a curve.
+export interface EcdsaCurveInfo {
+  // NIST/SECG curve name -- the value used for WebCrypto `namedCurve` and read
+  // off a signer/verifier as `algorithm` by the ecdsa-rdfc-2019 cryptosuite.
+  curve: EcdsaCurve
+  // Approximate classical security level, in bits.
+  securityBits: 128 | 192 | 256
+  // Digest paired with this curve (commensurate strength), as a WebCrypto hash
+  // name.
+  hash: 'SHA-256' | 'SHA-384' | 'SHA-512'
+  // JOSE / COSE algorithm identifier (RFC 7518).
+  jose: 'ES256' | 'ES384' | 'ES512'
+  // Raw (IEEE P1363 `r||s`) signature size in bytes -- the form WebCrypto emits.
+  signatureSize: 64 | 96 | 132
+  // Secret scalar `d` size, in bytes.
+  secretKeySize: 32 | 48 | 66
+  // 4-character multibase-multikey prefix of a `did:key` public key for this
+  // curve -- e.g. for registering the suite with `@interop/did-method-key`.
+  multibaseHeader: 'zDna' | 'z82L' | 'z2J9'
+}
+
+// Metadata for every ECDSA curve this library supports. See `EcdsaCurveInfo`.
+export const ECDSA_CURVE_INFO: Record<EcdsaCurve, EcdsaCurveInfo> = {
+  [ECDSA_CURVE.P256]: {
+    curve: ECDSA_CURVE.P256,
+    securityBits: 128,
+    hash: ECDSA_HASH.SHA256,
+    jose: 'ES256',
+    signatureSize: 64,
+    secretKeySize: 32,
+    multibaseHeader: 'zDna'
+  },
+  [ECDSA_CURVE.P384]: {
+    curve: ECDSA_CURVE.P384,
+    securityBits: 192,
+    hash: ECDSA_HASH.SHA384,
+    jose: 'ES384',
+    signatureSize: 96,
+    secretKeySize: 48,
+    multibaseHeader: 'z82L'
+  },
+  [ECDSA_CURVE.P521]: {
+    curve: ECDSA_CURVE.P521,
+    securityBits: 256,
+    hash: ECDSA_HASH.SHA512,
+    jose: 'ES512',
+    signatureSize: 132,
+    secretKeySize: 66,
+    multibaseHeader: 'z2J9'
+  }
+}
+
+// All `did:key` multibase-multikey prefixes for ECDSA keys (one per curve),
+// e.g. to register every ECDSA curve with a `did:key` resolver.
+export const ECDSA_MULTIBASE_HEADERS = [
+  ECDSA_CURVE_INFO[ECDSA_CURVE.P256].multibaseHeader,
+  ECDSA_CURVE_INFO[ECDSA_CURVE.P384].multibaseHeader,
+  ECDSA_CURVE_INFO[ECDSA_CURVE.P521].multibaseHeader
+] as const

@@ -3,10 +3,13 @@
  */
 import {
   ALGORITHM,
+  DEFAULT_ECDSA_CURVE,
   ECDSA_CURVE,
+  ECDSA_CURVE_INFO,
   EXTRACTABLE,
   MULTIKEY_CONTEXT_V1_URL
 } from './constants.js'
+import type { EcdsaCurve } from './constants.js'
 import { CryptoKey, webcrypto } from './crypto.js'
 import { createSigner, createVerifier } from './factory.js'
 import {
@@ -21,12 +24,17 @@ import {
 import { getSecretKeySize } from './helpers.js'
 import { toMultikey } from './translators.js'
 import type {
+  IKeyPair,
+  IMultikeyDocument,
+  IPublicKey
+} from '@interop/data-integrity-core'
+import type {
   DeriveSecretOptions,
   ExportOptions,
   ExportedKeyPair,
   Jwk,
-  KeyPairInterface,
-  Multikey
+  KeyDocument,
+  KeyPairInterface
 } from './types.js'
 
 export type {
@@ -34,26 +42,34 @@ export type {
   ExportOptions,
   ExportedKeyPair,
   Jwk,
-  KeyPairInterface,
-  Multikey,
-  Signer,
-  Verifier
+  KeyPairInterface
 } from './types.js'
+
+// Curve selection helpers: the supported curve names, per-curve metadata
+// (security level, hash, JOSE alg, signature size, did:key prefix), and the
+// `did:key` multibase prefixes for resolver registration.
+export {
+  DEFAULT_ECDSA_CURVE,
+  ECDSA_CURVE,
+  ECDSA_CURVE_INFO,
+  ECDSA_MULTIBASE_HEADERS
+} from './constants.js'
+export type { EcdsaCurve, EcdsaCurveInfo } from './constants.js'
 
 // FIXME: support `P-256K` via `@noble/secp256k1`
 // generates ECDSA key pair
 export async function generate({
   id,
   controller,
-  curve,
+  curve = DEFAULT_ECDSA_CURVE,
   keyAgreement = false
 }: {
   id?: string
   controller?: string
-  curve?: string
+  curve?: EcdsaCurve
   keyAgreement?: boolean
 } = {}): Promise<KeyPairInterface> {
-  if (!curve) {
+  if (!(curve in ECDSA_CURVE_INFO)) {
     throw new TypeError(
       '"curve" must be one of the following values: ' +
         `${Object.values(ECDSA_CURVE)
@@ -88,7 +104,9 @@ export async function generate({
 
 // imports P-256 key pair from JSON Multikey
 export async function from(
-  key: Multikey,
+  // accepts the data-integrity-core verification-method types, plus this
+  // library's own `export()` output (`ExportedKeyPair`) for round-tripping
+  key: IKeyPair | IPublicKey | ExportedKeyPair,
   options: { keyAgreement?: boolean } | boolean = {}
 ): Promise<KeyPairInterface> {
   // backwards compatibility
@@ -97,7 +115,7 @@ export async function from(
   }
   const { keyAgreement } = options
 
-  let multikey: Multikey = { ...key }
+  let multikey: KeyDocument = { ...key }
   if (multikey.type !== 'Multikey') {
     // attempt loading from JWK if `publicKeyJwk` is present
     if (multikey.publicKeyJwk) {
@@ -110,7 +128,8 @@ export async function from(
         ;({ id, controller } = multikey)
       }
       return fromJwk({
-        jwk: multikey.publicKeyJwk,
+        // the ECDSA path requires an EC JWK; `fromJwk` validates `kty`/`crv`
+        jwk: multikey.publicKeyJwk as Jwk,
         secretKey: false,
         id,
         controller
@@ -128,7 +147,7 @@ export async function from(
     multikey['@context'] = MULTIKEY_CONTEXT_V1_URL
   }
   if (multikey.controller && !multikey.id) {
-    multikey.id = `${key.controller}#${key.publicKeyMultibase}`
+    multikey.id = `${multikey.controller}#${multikey.publicKeyMultibase}`
   }
 
   _assertMultikey(multikey)
@@ -152,7 +171,7 @@ export async function fromJwk(
     keyAgreement?: boolean
   } = {} as { jwk: Jwk }
 ): Promise<KeyPairInterface> {
-  const multikey: Multikey = {
+  const multikey: KeyDocument = {
     '@context': MULTIKEY_CONTEXT_V1_URL,
     type: 'Multikey',
     publicKeyMultibase: toPublicKeyMultibase({ jwk })
@@ -166,8 +185,13 @@ export async function fromJwk(
   if (secretKey && jwk.d) {
     multikey.secretKeyMultibase = toSecretKeyMultibase({ jwk })
   }
-  const keyAgreement = !jwk.key_ops || jwk.key_ops.includes('deriveBits')
-  return from(multikey, keyAgreement)
+  // `key_ops` is not part of the strict EC JWK type, but WebCrypto-exported and
+  // user-supplied JWKs may still carry it; read it off defensively.
+  const keyOps = (jwk as { key_ops?: string[] }).key_ops
+  const keyAgreement = !keyOps || keyOps.includes('deriveBits')
+  // `multikey` always has `publicKeyMultibase` set above, so it satisfies the
+  // strict `IMultikeyDocument` that `from()` accepts.
+  return from(multikey as IMultikeyDocument, keyAgreement)
 }
 
 // converts key pair to JWK
@@ -298,7 +322,7 @@ async function _createKeyPairInterface({
 }
 
 // checks if key pair is in Multikey format
-function _assertMultikey(key: Multikey): void {
+function _assertMultikey(key: KeyDocument): void {
   if (!(key && typeof key === 'object')) {
     throw new TypeError('"key" must be an object.')
   }

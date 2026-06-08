@@ -25,8 +25,17 @@ const CONTEXT = MULTIKEY_CONTEXT_V1_URL
 
 describe('error paths', () => {
   describe('generate()', () => {
-    it('should throw if `curve` is missing', async () => {
-      await expect(EcdsaMultikey.generate({})).rejects.toThrow(TypeError)
+    it('should default to P-256 when `curve` is omitted', async () => {
+      const keyPair = await EcdsaMultikey.generate({})
+      const jwk = await EcdsaMultikey.toJwk({ keyPair })
+      expect(jwk.crv).toBe('P-256')
+    })
+
+    it('should throw for an unsupported `curve`', async () => {
+      await expect(
+        // @ts-expect-error testing an unsupported curve value
+        EcdsaMultikey.generate({ curve: 'P-999' })
+      ).rejects.toThrow(TypeError)
     })
   })
 

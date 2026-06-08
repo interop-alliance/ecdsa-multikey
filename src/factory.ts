@@ -1,9 +1,10 @@
 /*!
  * Copyright (c) 2022-2023 Digital Bazaar, Inc. All rights reserved.
  */
+import type { ISigner, IVerifier } from '@interop/data-integrity-core'
 import { ALGORITHM, ECDSA_CURVE, ECDSA_HASH } from './constants.js'
 import { webcrypto } from './crypto.js'
-import type { Signer, Verifier, WebCryptoKey } from './types.js'
+import type { WebCryptoKey } from './types.js'
 
 // exposes sign method
 export function createSigner({
@@ -12,7 +13,7 @@ export function createSigner({
 }: {
   id?: string
   secretKey?: WebCryptoKey
-}): Signer {
+}): ISigner {
   if (!secretKey) {
     throw new Error('"secretKey" is required for signing.')
   }
@@ -23,7 +24,9 @@ export function createSigner({
   }
   return {
     algorithm: curve,
-    id,
+    // `ISigner.id` is typed as required, but this library has historically
+    // allowed signing without a key id; preserve that behavior via this cast.
+    id: id as string,
     async sign({ data }: { data: Uint8Array }): Promise<Uint8Array> {
       return new Uint8Array(
         await webcrypto.subtle.sign(algorithm, secretKey, data as BufferSource)
@@ -39,7 +42,7 @@ export function createVerifier({
 }: {
   id?: string
   publicKey?: WebCryptoKey
-}): Verifier {
+}): IVerifier {
   if (!publicKey) {
     throw new Error('"publicKey" is required for verifying.')
   }

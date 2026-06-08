@@ -1,5 +1,29 @@
 # @interop/ecdsa-multikey ChangeLog
 
+## Unreleased - TBD
+
+### Added
+
+- Now depends on `@interop/data-integrity-core`, and the public API speaks its
+  shared types: `signer()` / `verifier()` return `ISigner` / `IVerifier`,
+  `fromJwk()` / `toJwk()` use the EC JWK types (`IEcPublicJwk` / `IEcSecretJwk`),
+  and `from()` accepts the data-integrity-core verification-method types
+  (`IKeyPair | IPublicKey`) in addition to this library's own `export()` output.
+  Import those types from `@interop/data-integrity-core` directly.
+- Exported curve-selection helpers: `ECDSA_CURVE`, `DEFAULT_ECDSA_CURVE`, the
+  `EcdsaCurve` type, a per-curve metadata table `ECDSA_CURVE_INFO` (security
+  level, paired hash, JOSE alg, signature size, secret-key size, and `did:key`
+  multibase prefix), and `ECDSA_MULTIBASE_HEADERS` (the `did:key` prefixes for
+  resolver registration).
+
+### Changed
+
+- **BREAKING**: `generate()` now defaults `curve` to `'P-256'` when omitted
+  (previously it threw). Pass an explicit `curve` for other curves.
+- **BREAKING**: this package no longer re-exports a `Multikey` type, nor
+  `Signer` / `Verifier` aliases. Use `IMultikeyDocument` / `IPublicMultikey` /
+  `IMultikeyPair` and `ISigner` / `IVerifier` from `@interop/data-integrity-core`.
+
 ## 2.0.0-2.0.1 - 2026-06-07
 
 ### Changed

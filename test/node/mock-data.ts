@@ -1,7 +1,8 @@
 /*!
  * Copyright (c) 2023 Digital Bazaar, Inc. All rights reserved.
  */
-import type { Multikey } from '../../src/index.js'
+import type { IEcPublicJwk, IMultikeyPair } from '@interop/data-integrity-core'
+import type { EcdsaCurve } from '../../src/index.js'
 
 export const mockKey = {
   type: 'Multikey',
@@ -49,7 +50,7 @@ const getKeyId = ({
 
 interface MultikeyFixture {
   id: string
-  serializedKeyPair: Multikey
+  serializedKeyPair: IMultikeyPair
   props: {
     secretKeyByteLength?: number
     publicKeyByteLength?: number
@@ -61,8 +62,8 @@ interface MultikeyFixture {
 // keys; asserting against them catches base58/base64url/compression/multicodec
 // header encoding regressions that the runtime round-trip tests cannot.
 interface JwkVector {
-  serializedKeyPair: Multikey
-  publicJwk: { kty: string; crv: string; x: string; y: string }
+  serializedKeyPair: IMultikeyPair
+  publicJwk: IEcPublicJwk
   secretD: string
 }
 
@@ -115,7 +116,7 @@ export const jwkVectors = new Map<string, JwkVector>([
   ]
 ])
 
-export const multikeys = new Map<string, MultikeyFixture>([
+export const multikeys = new Map<EcdsaCurve, MultikeyFixture>([
   [
     'P-256',
     {

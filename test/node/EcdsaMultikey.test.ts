@@ -19,6 +19,17 @@ describe('EcdsaMultikey', () => {
     })
   })
 
+  describe('ECDSA_CURVE_INFO', () => {
+    it('multibaseHeader should match generated public keys per curve', async () => {
+      for (const info of Object.values(EcdsaMultikey.ECDSA_CURVE_INFO)) {
+        const keyPair = await EcdsaMultikey.generate({ curve: info.curve })
+        expect(keyPair.publicKeyMultibase?.startsWith(info.multibaseHeader)).toBe(
+          true
+        )
+      }
+    })
+  })
+
   describe('algorithm', () => {
     it('deriveSecret() should not be supported by default', async () => {
       const keyPair = await EcdsaMultikey.generate({ curve: 'P-256' })
