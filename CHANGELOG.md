@@ -1,6 +1,13 @@
-# @digitalbazaar/ecdsa-multikey ChangeLog
+# @interop/ecdsa-multikey ChangeLog
 
 ## 1.8.1 - TBD
+
+### Changed
+
+- Forked from
+  [`@digitalbazaar/ecdsa-multikey`](https://github.com/digitalbazaar/ecdsa-multikey)
+  and published as `@interop/ecdsa-multikey`. No library behavior or public API
+  changes.
 
 ### Added
 

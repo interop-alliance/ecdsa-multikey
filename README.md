@@ -1,9 +1,10 @@
-# EcdsaMultikey Key Pair Library for Linked Data _(@digitalbazaar/ecdsa-multikey)_
+# EcdsaMultikey Key Pair Library for Linked Data _(@interop/ecdsa-multikey)_
 
-[![CI](https://github.com/digitalbazaar/ecdsa-multikey/actions/workflows/ci.yml/badge.svg)](https://github.com/digitalbazaar/ecdsa-multikey/actions/workflows/ci.yml)
-[![NPM Version](https://img.shields.io/npm/v/@digitalbazaar/ecdsa-multikey.svg)](https://npm.im/@digitalbazaar/ecdsa-multikey)
+[![CI](https://github.com/interop-alliance/ecdsa-multikey/actions/workflows/ci.yml/badge.svg)](https://github.com/interop-alliance/ecdsa-multikey/actions/workflows/ci.yml)
+[![NPM Version](https://img.shields.io/npm/v/@interop/ecdsa-multikey.svg)](https://npm.im/@interop/ecdsa-multikey)
 
-> Javascript library for generating and working with EcdsaMultikey key pairs.
+> TypeScript/JavaScript library for generating and working with EcdsaMultikey
+> key pairs.
 
 ## Table of Contents
 
@@ -16,6 +17,10 @@
 - [License](#license)
 
 ## Background
+
+(Forked from
+[`digitalbazaar/ecdsa-multikey`](https://github.com/digitalbazaar/ecdsa-multikey)
+to provide TypeScript compatibility.)
 
 For use with:
 
@@ -43,13 +48,13 @@ your system will largely depend on your design decisions.
 To install as a dependency:
 
 ```
-npm install @digitalbazaar/ecdsa-multikey
+npm install @interop/ecdsa-multikey
 ```
 
 To install locally (for development):
 
 ```
-git clone https://github.com/digitalbazaar/ecdsa-multikey.git
+git clone https://github.com/interop-alliance/ecdsa-multikey.git
 cd ecdsa-multikey
 pnpm install
 ```
@@ -68,7 +73,7 @@ To generate a new public/secret key pair:
   defined.)
 
 ```js
-import * as EcdsaMultikey from '@digitalbazaar/ecdsa-multikey'
+import * as EcdsaMultikey from '@interop/ecdsa-multikey'
 
 const keyPair = await EcdsaMultikey.generate({ curve: 'P-384' })
 ```
@@ -148,18 +153,10 @@ const valid = await verify({ data, signature })
 
 ## Contribute
 
-See
-[the contribute file](https://github.com/digitalbazaar/bedrock/blob/master/CONTRIBUTING.md)!
-
 PRs accepted.
 
 If editing the Readme, please conform to the
 [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
-
-## Commercial Support
-
-Commercial support for this library is available upon request from Digital
-Bazaar: support@digitalbazaar.com
 
 ## License
 
