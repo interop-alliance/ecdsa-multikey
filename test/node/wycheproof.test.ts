@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, it, expect } from 'vitest'
 import * as EcdsaMultikey from '../../src/index.js'
-import type { Jwk } from '../../src/index.js'
+import type { JWK } from '../../src/index.js'
 
 // Project Wycheproof IEEE P1363 (raw `r||s`) ECDSA verification vectors. These
 // exercise the verifier against externally-produced signatures -- including
@@ -24,7 +24,7 @@ interface WycheproofTest {
   flags: string[]
 }
 interface WycheproofGroup {
-  publicKeyJwk: Jwk
+  publicKeyJwk: JWK
   tests: WycheproofTest[]
 }
 interface WycheproofFile {

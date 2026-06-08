@@ -1,5 +1,20 @@
 # @interop/ecdsa-multikey ChangeLog
 
+## 2.2.0 - TBD
+
+### Changed
+
+- Use the all-caps JWK type names from `@interop/data-integrity-core`
+  (`IECPublicJWK`, `IECSecretJWK`, `IPublicJWK`, `ISecretJWK`) in place of the
+  now-deprecated PascalCase aliases.
+- `KeyPairInterface` now extends `IKeyPairCore` from
+  `@interop/data-integrity-core`, sharing the common metadata fields
+  (`@context`, `id`, `type`, `controller`, `revoked`) instead of redeclaring
+  them. Require `@interop/data-integrity-core@^6.4.0` (for the widened
+  `IKeyPairCore['@context']`).
+- Replace the local `JsonLdContext` type with the shared `ILDContext` from
+  `@interop/data-integrity-core`.
+
 ## 2.1.0 - 2026-06-08
 
 ### Added

@@ -2,10 +2,12 @@
  * Copyright (c) 2022-2023 Digital Bazaar, Inc. All rights reserved.
  */
 import type {
-  IEcPublicJwk,
-  IEcSecretJwk,
-  IPublicJwk,
-  ISecretJwk,
+  IECPublicJWK,
+  IECSecretJWK,
+  IKeyPairCore,
+  ILDContext,
+  IPublicJWK,
+  ISecretJWK,
   ISigner,
   IVerifier
 } from '@interop/data-integrity-core'
@@ -16,10 +18,7 @@ export type WebCryptoKey = CryptoKey
 // An EC JSON Web Key, as produced and consumed by this library. Aliases the
 // data-integrity-core EC JWK union: a public key (`x`, `y`) or a secret key
 // (`x`, `y`, `d`).
-export type Jwk = IEcPublicJwk | IEcSecretJwk
-
-// A `@context` value -- a single URL or an array of URLs / inline contexts.
-export type JsonLdContext = string | Array<string | Record<string, unknown>>
+export type JWK = IECPublicJWK | IECSecretJWK
 
 // Internal, deliberately permissive serialization shape for a Multikey-ish key
 // document: every field is optional so it can model a partially-built export or
@@ -27,7 +26,7 @@ export type JsonLdContext = string | Array<string | Record<string, unknown>>
 // -- consumers should use the strict `IMultikeyDocument` / `IPublicMultikey` /
 // `IMultikeyPair` from `@interop/data-integrity-core`.
 export interface KeyDocument {
-  '@context'?: JsonLdContext
+  '@context'?: ILDContext
   id?: string
   type?: string
   controller?: string
@@ -38,7 +37,7 @@ export interface KeyDocument {
   // permissively (any JWK) to accept the broad `publicKeyJwk` of the
   // data-integrity-core verification-method types; the ECDSA import path
   // narrows/validates it to an EC `Jwk`.
-  publicKeyJwk?: IPublicJwk | ISecretJwk
+  publicKeyJwk?: IPublicJWK | ISecretJWK
 }
 
 // Options accepted by `keyPair.export()`.
@@ -62,11 +61,9 @@ export interface DeriveSecretOptions {
 }
 
 // The augmented key pair interface returned by `generate()`, `from()`, etc.
-export interface KeyPairInterface {
-  '@context'?: JsonLdContext
-  id?: string
-  controller?: string
-  type?: string
+// Extends the shared `IKeyPairCore` metadata (`@context`, `id`, `type`,
+// `controller`, `revoked`) with this library's live key material and methods.
+export interface KeyPairInterface extends IKeyPairCore {
   publicKey?: WebCryptoKey
   secretKey?: WebCryptoKey
   publicKeyMultibase?: string
