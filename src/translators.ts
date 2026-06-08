@@ -8,7 +8,8 @@ import {
   ECDSA_2019_SUITE_CONTEXT_V1_URL,
   MULTIKEY_CONTEXT_V1_URL
 } from './constants.js'
-import type { JsonLdContext, KeyDocument } from './types.js'
+import type { ILDContext } from '@interop/data-integrity-core'
+import type { KeyDocument } from './types.js'
 
 // valid ECDSA types
 const VALID_ECDSA_TYPES = new Set<string>([
@@ -54,7 +55,7 @@ function _includesContext({
   document,
   contextUrl
 }: {
-  document: { '@context'?: JsonLdContext }
+  document: { '@context'?: ILDContext }
   contextUrl: string
 }): boolean {
   const context = document['@context']

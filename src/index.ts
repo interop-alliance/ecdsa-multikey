@@ -32,7 +32,7 @@ import type {
   DeriveSecretOptions,
   ExportOptions,
   ExportedKeyPair,
-  Jwk,
+  JWK,
   KeyDocument,
   KeyPairInterface
 } from './types.js'
@@ -41,7 +41,7 @@ export type {
   DeriveSecretOptions,
   ExportOptions,
   ExportedKeyPair,
-  Jwk,
+  JWK,
   KeyPairInterface
 } from './types.js'
 
@@ -129,7 +129,7 @@ export async function from(
       }
       return fromJwk({
         // the ECDSA path requires an EC JWK; `fromJwk` validates `kty`/`crv`
-        jwk: multikey.publicKeyJwk as Jwk,
+        jwk: multikey.publicKeyJwk as JWK,
         secretKey: false,
         id,
         controller
@@ -162,14 +162,14 @@ export async function fromJwk(
     id,
     controller
   }: {
-    jwk: Jwk
+    jwk: JWK
     secretKey?: boolean
     id?: string
     controller?: string
     // accepted for backwards compatibility; `keyAgreement` is derived from the
     // JWK's `key_ops` below, so any value passed here is ignored
     keyAgreement?: boolean
-  } = {} as { jwk: Jwk }
+  } = {} as { jwk: JWK }
 ): Promise<KeyPairInterface> {
   const multikey: KeyDocument = {
     '@context': MULTIKEY_CONTEXT_V1_URL,
@@ -203,13 +203,13 @@ export async function toJwk(
     keyPair: any
     secretKey?: boolean
   } = {} as { keyPair: any }
-): Promise<Jwk> {
+): Promise<JWK> {
   if (!(keyPair?.publicKey instanceof CryptoKey)) {
     keyPair = await importKeyPair(keyPair)
   }
   const useSecretKey = secretKey && !!keyPair.secretKey
   const cryptoKey = useSecretKey ? keyPair.secretKey : keyPair.publicKey
-  const jwk = (await webcrypto.subtle.exportKey('jwk', cryptoKey)) as Jwk
+  const jwk = (await webcrypto.subtle.exportKey('jwk', cryptoKey)) as JWK
   return jwk
 }
 
@@ -242,7 +242,7 @@ export async function fromRaw(
     publicKey,
     keyAgreement
   })
-  const jwk = (await webcrypto.subtle.exportKey('jwk', cryptoKey)) as Jwk
+  const jwk = (await webcrypto.subtle.exportKey('jwk', cryptoKey)) as JWK
   return fromJwk({ jwk, secretKey: !!secretKey, keyAgreement })
 }
 

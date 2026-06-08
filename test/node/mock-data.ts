@@ -1,7 +1,7 @@
 /*!
  * Copyright (c) 2023 Digital Bazaar, Inc. All rights reserved.
  */
-import type { IEcPublicJwk, IMultikeyPair } from '@interop/data-integrity-core'
+import type { IECPublicJWK, IMultikeyPair } from '@interop/data-integrity-core'
 import type { EcdsaCurve } from '../../src/index.js'
 
 export const mockKey = {
@@ -63,7 +63,7 @@ interface MultikeyFixture {
 // header encoding regressions that the runtime round-trip tests cannot.
 interface JwkVector {
   serializedKeyPair: IMultikeyPair
-  publicJwk: IEcPublicJwk
+  publicJwk: IECPublicJWK
   secretD: string
 }
 
