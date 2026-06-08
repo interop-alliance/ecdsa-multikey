@@ -1,11 +1,11 @@
 {
-  "name": "@digitalbazaar/ecdsa-multikey",
+  "name": "@interop/ecdsa-multikey",
   "version": "1.8.1-0",
-  "description": "Javascript library for generating and working with EcdsaMultikey key pairs.",
-  "homepage": "https://github.com/digitalbazaar/ecdsa-multikey",
+  "description": "TypeScript/JavaScript library for generating and working with EcdsaMultikey key pairs.",
+  "homepage": "https://github.com/interop-alliance/ecdsa-multikey",
   "repository": {
     "type": "git",
-    "url": "https://github.com/digitalbazaar/ecdsa-multikey"
+    "url": "git+https://github.com/interop-alliance/ecdsa-multikey.git"
   },
   "license": "BSD-3-Clause",
   "type": "module",
@@ -25,6 +25,7 @@
   "sideEffects": false,
   "files": [
     "dist",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE"
   ],
