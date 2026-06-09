@@ -1,5 +1,26 @@
 # @interop/ecdsa-multikey ChangeLog
 
+## 2.3.0 - TBD
+
+### Changed
+
+- Rename the exported `KeyPairInterface` to `IECDSAKeyPair`.
+- Align the key-pair contract with the shared `AbstractKeyPair` from
+  `@interop/data-integrity-core`: `IECDSAKeyPair` now `extends AbstractKeyPair`,
+  and the non-raw `export()` returns the shared `IMultikeyDocument` (was the
+  library-local `ExportedKeyPair`; the `raw` path still returns key bytes).
+  Since `AbstractKeyPair` has no private members, the plain key-pair objects
+  this library produces remain assignable to `AbstractKeyPair` -- no class-based
+  rewrite and no public-API change.
+- Require `@interop/data-integrity-core` `^7.0.0` (which makes the base
+  `export()` async; this library's `export()` was already async).
+
+### Added
+
+- Key pairs now implement `fingerprint()` and `verifyFingerprint()` for parity
+  with the shared `AbstractKeyPair` contract. For a Multikey, the fingerprint is
+  the `publicKeyMultibase`.
+
 ## 2.2.0 - 2026-06-08
 
 ### Changed
@@ -21,10 +42,11 @@
 
 - Now depends on `@interop/data-integrity-core`, and the public API speaks its
   shared types: `signer()` / `verifier()` return `ISigner` / `IVerifier`,
-  `fromJwk()` / `toJwk()` use the EC JWK types (`IEcPublicJwk` / `IEcSecretJwk`),
-  and `from()` accepts the data-integrity-core verification-method types
-  (`IKeyPair | IPublicKey`) in addition to this library's own `export()` output.
-  Import those types from `@interop/data-integrity-core` directly.
+  `fromJwk()` / `toJwk()` use the EC JWK types (`IEcPublicJwk` /
+  `IEcSecretJwk`), and `from()` accepts the data-integrity-core
+  verification-method types (`IKeyPair | IPublicKey`) in addition to this
+  library's own `export()` output. Import those types from
+  `@interop/data-integrity-core` directly.
 - Exported curve-selection helpers: `ECDSA_CURVE`, `DEFAULT_ECDSA_CURVE`, the
   `EcdsaCurve` type, a per-curve metadata table `ECDSA_CURVE_INFO` (security
   level, paired hash, JOSE alg, signature size, secret-key size, and `did:key`
@@ -37,7 +59,8 @@
   (previously it threw). Pass an explicit `curve` for other curves.
 - **BREAKING**: this package no longer re-exports a `Multikey` type, nor
   `Signer` / `Verifier` aliases. Use `IMultikeyDocument` / `IPublicMultikey` /
-  `IMultikeyPair` and `ISigner` / `IVerifier` from `@interop/data-integrity-core`.
+  `IMultikeyPair` and `ISigner` / `IVerifier` from
+  `@interop/data-integrity-core`.
 
 ## 2.0.0-2.0.1 - 2026-06-07
 

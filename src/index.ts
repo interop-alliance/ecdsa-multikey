@@ -26,7 +26,8 @@ import { toMultikey } from './translators.js'
 import type {
   IKeyPair,
   IMultikeyDocument,
-  IPublicKey
+  IPublicKey,
+  IVerificationResult
 } from '@interop/data-integrity-core'
 import type {
   DeriveSecretOptions,
@@ -34,7 +35,7 @@ import type {
   ExportedKeyPair,
   JWK,
   KeyDocument,
-  KeyPairInterface
+  IECDSAKeyPair
 } from './types.js'
 
 export type {
@@ -42,7 +43,7 @@ export type {
   ExportOptions,
   ExportedKeyPair,
   JWK,
-  KeyPairInterface
+  IECDSAKeyPair
 } from './types.js'
 
 // Curve selection helpers: the supported curve names, per-curve metadata
@@ -68,7 +69,7 @@ export async function generate({
   controller?: string
   curve?: EcdsaCurve
   keyAgreement?: boolean
-} = {}): Promise<KeyPairInterface> {
+} = {}): Promise<IECDSAKeyPair> {
   if (!(curve in ECDSA_CURVE_INFO)) {
     throw new TypeError(
       '"curve" must be one of the following values: ' +
@@ -108,7 +109,7 @@ export async function from(
   // library's own `export()` output (`ExportedKeyPair`) for round-tripping
   key: IKeyPair | IPublicKey | ExportedKeyPair,
   options: { keyAgreement?: boolean } | boolean = {}
-): Promise<KeyPairInterface> {
+): Promise<IECDSAKeyPair> {
   // backwards compatibility
   if (typeof options === 'boolean') {
     options = { keyAgreement: options }
@@ -170,7 +171,7 @@ export async function fromJwk(
     // JWK's `key_ops` below, so any value passed here is ignored
     keyAgreement?: boolean
   } = {} as { jwk: JWK }
-): Promise<KeyPairInterface> {
+): Promise<IECDSAKeyPair> {
   const multikey: KeyDocument = {
     '@context': MULTIKEY_CONTEXT_V1_URL,
     type: 'Multikey',
@@ -226,7 +227,7 @@ export async function fromRaw(
     publicKey: Uint8Array
     keyAgreement?: boolean
   } = {} as { curve: string; publicKey: Uint8Array }
-): Promise<KeyPairInterface> {
+): Promise<IECDSAKeyPair> {
   if (typeof curve !== 'string') {
     throw new TypeError('"curve" must be a string.')
   }
@@ -253,19 +254,27 @@ async function _createKeyPairInterface({
 }: {
   keyPair: any
   keyAgreement?: boolean
-}): Promise<KeyPairInterface> {
+}): Promise<IECDSAKeyPair> {
   if (!(keyPair?.publicKey instanceof CryptoKey)) {
     keyPair = await importKeyPair(keyPair)
   }
-  const exportFn = async ({
+  function exportFn(
+    options?: ExportOptions & { raw?: false }
+  ): Promise<IMultikeyDocument>
+  function exportFn(
+    options: ExportOptions & { raw: true }
+  ): Promise<{ publicKey?: Uint8Array; secretKey?: Uint8Array }>
+  async function exportFn({
     publicKey = true,
     secretKey = false,
     includeContext = true,
     raw = false
-  }: ExportOptions = {}): Promise<ExportedKeyPair> => {
+  }: ExportOptions = {}): Promise<
+    IMultikeyDocument | { publicKey?: Uint8Array; secretKey?: Uint8Array }
+  > {
     if (raw) {
       const jwk = await toJwk({ keyPair, secretKey })
-      const result: ExportedKeyPair = {}
+      const result: { publicKey?: Uint8Array; secretKey?: Uint8Array } = {}
       if (publicKey) {
         result.publicKey = toPublicKeyBytes({ jwk })
       }
@@ -276,11 +285,13 @@ async function _createKeyPairInterface({
     }
     return exportKeyPair({ keyPair, publicKey, secretKey, includeContext })
   }
-  const { publicKeyMultibase, secretKeyMultibase } = await exportFn({
+  // Cast to the loose `KeyDocument`: the strict `IMultikeyDocument` return omits
+  // `secretKeyMultibase` on its public-only (`IPublicMultikey`) arm.
+  const { publicKeyMultibase, secretKeyMultibase } = (await exportFn({
     publicKey: true,
     secretKey: true,
     includeContext: true
-  })
+  })) as KeyDocument
   keyPair = {
     ...keyPair,
     publicKeyMultibase,
@@ -294,6 +305,19 @@ async function _createKeyPairInterface({
     verifier() {
       const { id, publicKey } = keyPair
       return createVerifier({ id, publicKey })
+    },
+    // For a Multikey, the fingerprint is the `publicKeyMultibase` (the same value
+    // used to build the key id). Provided for parity with the `AbstractKeyPair`
+    // contract shared across suites.
+    fingerprint(): string {
+      return keyPair.publicKeyMultibase
+    },
+    verifyFingerprint({
+      fingerprint
+    }: {
+      fingerprint: string
+    }): IVerificationResult {
+      return { verified: fingerprint === keyPair.publicKeyMultibase }
     },
     // pass `publicKey`, as `remotePublicKey` is just a backwards compatible
     // alias

@@ -2,6 +2,7 @@
  * Copyright (c) 2024 Digital Bazaar, Inc.
  */
 import { describe, it, expect } from 'vitest'
+import type { IMultikeyPair } from '@interop/data-integrity-core'
 import * as EcdsaMultikey from '../../src/index.js'
 import { jwkVectors } from './mock-data.js'
 
@@ -41,10 +42,10 @@ describe('JWK known-answer vectors', () => {
           d: secretD
         }
         const keyPair = await EcdsaMultikey.fromJwk({ jwk, secretKey: true })
-        const exported = await keyPair.export({
+        const exported = (await keyPair.export({
           publicKey: true,
           secretKey: true
-        })
+        })) as IMultikeyPair
         expect(exported.publicKeyMultibase).toBe(
           serializedKeyPair.publicKeyMultibase
         )

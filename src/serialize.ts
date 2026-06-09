@@ -17,6 +17,7 @@ import {
   setPublicKeyHeader,
   setSecretKeyHeader
 } from './helpers.js'
+import type { IMultikeyDocument } from '@interop/data-integrity-core'
 import type { KeyDocument, WebCryptoKey } from './types.js'
 
 // a key pair whose keys have been imported into WebCrypto
@@ -143,7 +144,7 @@ export async function exportKeyPair({
   secretKey?: boolean
   publicKey?: boolean
   includeContext?: boolean
-}): Promise<KeyDocument> {
+}): Promise<IMultikeyDocument> {
   if (!(publicKey || secretKey)) {
     throw new TypeError(
       'Export requires specifying either "publicKey" or "secretKey".'
@@ -172,7 +173,9 @@ export async function exportKeyPair({
     exported.secretKeyMultibase = toSecretKeyMultibase({ jwk })
   }
 
-  return exported
+  // Callers always request the public key (the `export()` default), so
+  // `publicKeyMultibase` is set; assert the strict Multikey shape for the type.
+  return exported as IMultikeyDocument
 }
 
 // imports key pair

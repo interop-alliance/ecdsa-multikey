@@ -2,14 +2,13 @@
  * Copyright (c) 2022-2023 Digital Bazaar, Inc. All rights reserved.
  */
 import type {
+  AbstractKeyPair,
   IECPublicJWK,
   IECSecretJWK,
-  IKeyPairCore,
   ILDContext,
+  IMultikeyDocument,
   IPublicJWK,
-  ISecretJWK,
-  ISigner,
-  IVerifier
+  ISecretJWK
 } from '@interop/data-integrity-core'
 
 // A WebCrypto key instance (the DOM/Node `CryptoKey`).
@@ -56,21 +55,29 @@ export type ExportedKeyPair = KeyDocument & {
 
 // Options accepted by `keyPair.deriveSecret()`.
 export interface DeriveSecretOptions {
-  publicKey?: KeyPairInterface
-  remotePublicKey?: KeyPairInterface
+  publicKey?: IECDSAKeyPair
+  remotePublicKey?: IECDSAKeyPair
 }
 
-// The augmented key pair interface returned by `generate()`, `from()`, etc.
-// Extends the shared `IKeyPairCore` metadata (`@context`, `id`, `type`,
-// `controller`, `revoked`) with this library's live key material and methods.
-export interface KeyPairInterface extends IKeyPairCore {
+// The augmented key pair returned by `generate()`, `from()`, etc. Extends the
+// shared `AbstractKeyPair` contract (`id`, `type`, `controller`, `revoked`,
+// `fingerprint()`, `verifyFingerprint()`, `signer()`, `verifier()`, and the
+// async `export()`) with this library's live WebCrypto key material and the
+// key-agreement methods. Because `AbstractKeyPair` has no private members, the
+// plain objects this library builds satisfy it structurally -- so an ecdsa key
+// pair is usable anywhere an `AbstractKeyPair` is expected, without this library
+// adopting a class-based design.
+export interface IECDSAKeyPair extends AbstractKeyPair {
   publicKey?: WebCryptoKey
   secretKey?: WebCryptoKey
   publicKeyMultibase?: string
   secretKeyMultibase?: string
   keyAgreement?: boolean
-  export(options?: ExportOptions): Promise<ExportedKeyPair>
-  signer(): ISigner
-  verifier(): IVerifier
+  // Narrows the base `export()`: the default (Multikey) path returns the shared
+  // `IMultikeyDocument`; the `raw` escape hatch returns key bytes.
+  export(options?: ExportOptions & { raw?: false }): Promise<IMultikeyDocument>
+  export(
+    options: ExportOptions & { raw: true }
+  ): Promise<{ publicKey?: Uint8Array; secretKey?: Uint8Array }>
   deriveSecret(options?: DeriveSecretOptions): Promise<Uint8Array>
 }

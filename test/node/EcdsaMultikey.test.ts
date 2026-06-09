@@ -23,9 +23,9 @@ describe('EcdsaMultikey', () => {
     it('multibaseHeader should match generated public keys per curve', async () => {
       for (const info of Object.values(EcdsaMultikey.ECDSA_CURVE_INFO)) {
         const keyPair = await EcdsaMultikey.generate({ curve: info.curve })
-        expect(keyPair.publicKeyMultibase?.startsWith(info.multibaseHeader)).toBe(
-          true
-        )
+        expect(
+          keyPair.publicKeyMultibase?.startsWith(info.multibaseHeader)
+        ).toBe(true)
       }
     })
   })
@@ -58,6 +58,30 @@ describe('EcdsaMultikey', () => {
       const secret2 = await keyPair2.deriveSecret({ publicKey: keyPair1 })
 
       expect(secret1).toEqual(secret2)
+    })
+  })
+
+  describe('fingerprint', () => {
+    it('fingerprint() returns the publicKeyMultibase', async () => {
+      const keyPair = await EcdsaMultikey.generate({ curve: 'P-256' })
+
+      expect(keyPair.fingerprint()).toBe(keyPair.publicKeyMultibase)
+    })
+
+    it('verifyFingerprint() verifies its own fingerprint', async () => {
+      const keyPair = await EcdsaMultikey.generate({ curve: 'P-256' })
+
+      const result = keyPair.verifyFingerprint({
+        fingerprint: keyPair.fingerprint()
+      })
+      expect(result.verified).toBe(true)
+    })
+
+    it('verifyFingerprint() rejects a mismatched fingerprint', async () => {
+      const keyPair = await EcdsaMultikey.generate({ curve: 'P-256' })
+
+      const result = keyPair.verifyFingerprint({ fingerprint: 'zNotTheKey' })
+      expect(result.verified).toBe(false)
     })
   })
 
