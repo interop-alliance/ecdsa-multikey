@@ -353,13 +353,11 @@ function _assertMultikey(key: KeyDocument): void {
   if (key.type !== 'Multikey') {
     throw new TypeError('"key" must be a Multikey with type "Multikey".')
   }
-  if (
-    !(
-      key['@context'] === MULTIKEY_CONTEXT_V1_URL ||
-      (Array.isArray(key['@context']) &&
-        key['@context'].includes(MULTIKEY_CONTEXT_V1_URL))
-    )
-  ) {
+  if (!(
+    key['@context'] === MULTIKEY_CONTEXT_V1_URL ||
+    (Array.isArray(key['@context']) &&
+      key['@context'].includes(MULTIKEY_CONTEXT_V1_URL))
+  )) {
     throw new TypeError(
       '"key" must be a Multikey with context ' + `"${MULTIKEY_CONTEXT_V1_URL}".`
     )

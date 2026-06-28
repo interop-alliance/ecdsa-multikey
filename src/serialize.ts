@@ -197,13 +197,11 @@ export async function importKeyPair({
   }
 
   // import public key
-  if (
-    !(
-      publicKeyMultibase &&
-      typeof publicKeyMultibase === 'string' &&
-      publicKeyMultibase[0] === MULTIBASE_BASE58_HEADER
-    )
-  ) {
+  if (!(
+    publicKeyMultibase &&
+    typeof publicKeyMultibase === 'string' &&
+    publicKeyMultibase[0] === MULTIBASE_BASE58_HEADER
+  )) {
     throw new TypeError(
       '"publicKeyMultibase" must be a multibase, base58-encoded string.'
     )
@@ -237,12 +235,10 @@ export async function importKeyPair({
 
   // import secret key if given
   if (secretKeyMultibase) {
-    if (
-      !(
-        typeof secretKeyMultibase === 'string' &&
-        secretKeyMultibase[0] === MULTIBASE_BASE58_HEADER
-      )
-    ) {
+    if (!(
+      typeof secretKeyMultibase === 'string' &&
+      secretKeyMultibase[0] === MULTIBASE_BASE58_HEADER
+    )) {
       throw new TypeError(
         '"secretKeyMultibase" must be a multibase, base58-encoded string.'
       )
