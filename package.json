@@ -30,7 +30,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@interop/data-integrity-core": "^8.1.0",
+    "@interop/data-integrity-core": "^8.3.0",
     "@scure/base": "^2.2.0"
   },
   "devDependencies": {
