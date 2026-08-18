@@ -1,6 +1,6 @@
 {
   "name": "@interop/ecdsa-multikey",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "TypeScript/JavaScript library for generating and working with EcdsaMultikey key pairs.",
   "homepage": "https://github.com/interop-alliance/ecdsa-multikey",
   "repository": {
