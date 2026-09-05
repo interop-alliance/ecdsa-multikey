@@ -1,8 +1,19 @@
 # @interop/ecdsa-multikey ChangeLog
 
+## 2.4.0 - TBD
+
+### Changed
+
+- Decode P-curve Multikey strings through `decodeMultikey` from
+  `@interop/data-integrity-core/multihash` instead of hand-rolled header checks.
+  Header recognition and compressed-point / secret-scalar length are now both
+  validated by the shared decoder, so a malformed or wrong-length P-curve key is
+  rejected earlier and more strictly.
+
 ## 2.3.4 - 2026-08-18
 
 ### Changed
+
 - Update to latest `@interop/data-integrity-core@8.7.1`.
 
 ## 2.3.3 - 2026-07-17

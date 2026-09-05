@@ -11,8 +11,8 @@ import {
 } from './constants.js'
 import { webcrypto } from './crypto.js'
 import {
-  getNamedCurveFromPublicMultikey,
-  getNamedCurveFromSecretMultikey,
+  decodePublicMultikey,
+  decodeSecretMultikey,
   getSecretKeySize,
   setPublicKeyHeader,
   setSecretKeyHeader
@@ -206,17 +206,19 @@ export async function importKeyPair({
       '"publicKeyMultibase" must be a multibase, base58-encoded string.'
     )
   }
-  const publicMultikey = base58.decode(publicKeyMultibase.slice(1))
+  const { curve: publicCurve, keyBytes: publicKey } = decodePublicMultikey({
+    publicKeyMultibase
+  })
 
   // set named curved based on multikey header
   const algorithm = {
     name: keyAgreement ? 'ECDH' : ALGORITHM,
-    namedCurve: getNamedCurveFromPublicMultikey({ publicMultikey })
+    namedCurve: publicCurve
   }
 
   // import public key; convert to `spki` format because `jwk` doesn't handle
   // compressed public keys
-  const spki = _multikeyToSpki({ publicMultikey })
+  const spki = _rawToSpki({ curve: publicCurve, publicKey })
   // must be empty usage for importing a public key
   const publicUsage: KeyUsage[] = keyAgreement ? [] : ['verify']
   const importedPublicKey = await webcrypto.subtle.importKey(
@@ -243,15 +245,22 @@ export async function importKeyPair({
         '"secretKeyMultibase" must be a multibase, base58-encoded string.'
       )
     }
-    const secretMultikey = base58.decode(secretKeyMultibase.slice(1))
+    const { curve: secretCurve, keyBytes: secretKey } = decodeSecretMultikey({
+      secretKeyMultibase
+    })
 
     // ensure secret key multikey header appropriately matches the
     // public key multikey header
-    _ensureMultikeyHeadersMatch({ secretMultikey, publicMultikey })
+    if (secretCurve !== publicCurve) {
+      throw new Error(
+        `Public key curve ('${publicCurve}') does not match ` +
+          `secret key curve ('${secretCurve}').`
+      )
+    }
 
     // convert to `pkcs8` format for import because `jwk` doesn't support
     // compressed keys
-    const pkcs8 = _multikeyToPkcs8({ secretMultikey, publicMultikey })
+    const pkcs8 = _rawToPkcs8({ curve: secretCurve, secretKey, publicKey })
     const secretUsage: KeyUsage[] = keyAgreement ? ['deriveBits'] : ['sign']
     keyPair.secretKey = await webcrypto.subtle.importKey(
       'pkcs8',
@@ -337,50 +346,6 @@ export function toSecretKeyMultibase({ jwk }: { jwk: JsonWebKey }): string {
   multikey.set(d, multikey.length - d.length)
   const secretKeyMultibase = MULTIBASE_BASE58_HEADER + base58.encode(multikey)
   return secretKeyMultibase
-}
-
-// ensures that public key header matches secret key header
-function _ensureMultikeyHeadersMatch({
-  secretMultikey,
-  publicMultikey
-}: {
-  secretMultikey: Uint8Array
-  publicMultikey: Uint8Array
-}): void {
-  const publicCurve = getNamedCurveFromPublicMultikey({ publicMultikey })
-  const secretCurve = getNamedCurveFromSecretMultikey({ secretMultikey })
-  if (publicCurve !== secretCurve) {
-    throw new Error(
-      `Public key curve ('${publicCurve}') does not match ` +
-        `secret key curve ('${secretCurve}').`
-    )
-  }
-}
-
-// converts key pair to PKCS #8 format
-function _multikeyToPkcs8({
-  secretMultikey,
-  publicMultikey
-}: {
-  secretMultikey: Uint8Array
-  publicMultikey: Uint8Array
-}): Uint8Array<ArrayBuffer> {
-  const curve = getNamedCurveFromSecretMultikey({ secretMultikey })
-  // omit multikey headers
-  const secretKey = secretMultikey.subarray(2)
-  const publicKey = publicMultikey.subarray(2)
-  return _rawToPkcs8({ curve, secretKey, publicKey })
-}
-
-function _multikeyToSpki({
-  publicMultikey
-}: {
-  publicMultikey: Uint8Array
-}): Uint8Array<ArrayBuffer> {
-  const curve = getNamedCurveFromPublicMultikey({ publicMultikey })
-  // omit multikey header
-  const publicKey = publicMultikey.subarray(2)
-  return _rawToSpki({ curve, publicKey })
 }
 
 // converts key pair to PKCS #8 format

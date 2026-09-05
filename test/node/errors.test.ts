@@ -3,6 +3,7 @@
  */
 import { describe, it, expect } from 'vitest'
 import * as EcdsaMultikey from '../../src/index.js'
+import { base58btc as base58 } from '../../src/baseX.js'
 import { createSigner, createVerifier } from '../../src/factory.js'
 import {
   exportKeyPair,
@@ -12,14 +13,17 @@ import {
   toSecretKeyMultibase
 } from '../../src/serialize.js'
 import {
-  getNamedCurveFromPublicMultikey,
-  getNamedCurveFromSecretMultikey,
+  decodePublicMultikey,
+  decodeSecretMultikey,
   getSecretKeySize,
   setPublicKeyHeader,
   setSecretKeyHeader
 } from '../../src/helpers.js'
 import { MULTIKEY_CONTEXT_V1_URL } from '../../src/constants.js'
 import { mockKeyEcdsaSecp256, mockKeyEcdsaSecp384 } from './mock-data.js'
+
+// a multikey string whose multicodec header (`0x00 0x00`) is unrecognized
+const UNSUPPORTED_MULTIKEY = 'z' + base58.encode(new Uint8Array([0x00, 0x00]))
 
 const CONTEXT = MULTIKEY_CONTEXT_V1_URL
 
@@ -229,18 +233,18 @@ describe('error paths', () => {
   })
 
   describe('helpers', () => {
-    it('getNamedCurveFromPublicMultikey() should throw on bad header', () => {
+    it('decodePublicMultikey() should throw on bad header', () => {
       expect(() =>
-        getNamedCurveFromPublicMultikey({
-          publicMultikey: new Uint8Array([0x00, 0x00])
+        decodePublicMultikey({
+          publicKeyMultibase: UNSUPPORTED_MULTIKEY
         })
       ).toThrow('Unsupported public multikey header.')
     })
 
-    it('getNamedCurveFromSecretMultikey() should throw on bad header', () => {
+    it('decodeSecretMultikey() should throw on bad header', () => {
       expect(() =>
-        getNamedCurveFromSecretMultikey({
-          secretMultikey: new Uint8Array([0x00, 0x00])
+        decodeSecretMultikey({
+          secretKeyMultibase: UNSUPPORTED_MULTIKEY
         })
       ).toThrow('Unsupported secret multikey header.')
     })

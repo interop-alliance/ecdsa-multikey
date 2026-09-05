@@ -7,7 +7,7 @@ import * as EcdsaMultikey from '../../src/index.js'
 import { stringToUint8Array } from './text-encoder.js'
 import { CryptoKey, webcrypto } from '../../src/crypto.js'
 import { exportKeyPair } from '../../src/serialize.js'
-import { getNamedCurveFromPublicMultikey } from '../../src/helpers.js'
+import { decodePublicMultikey } from '../../src/helpers.js'
 import type { EcdsaCurve } from '../../src/index.js'
 import type {
   IMultikeyDocument,
@@ -394,11 +394,11 @@ function _ensurePublicKeyEncoding({
 }) {
   expect(keyPair.publicKeyMultibase!.startsWith('z')).toBe(true)
   expect(publicKeyMultibase!.startsWith('z')).toBe(true)
-  const decodedPubkey = base58.decode(publicKeyMultibase!.slice(1))
-  const ecdsaCurve = getNamedCurveFromPublicMultikey({
-    publicMultikey: decodedPubkey
+  const { curve: ecdsaCurve } = decodePublicMultikey({
+    publicKeyMultibase: publicKeyMultibase!
   })
   expect(ecdsaCurve).toBe(keyType)
+  const decodedPubkey = base58.decode(publicKeyMultibase!.slice(1))
   const encodedPubkey = 'z' + base58.encode(decodedPubkey)
   expect(encodedPubkey).toBe(keyPair.publicKeyMultibase)
 }
