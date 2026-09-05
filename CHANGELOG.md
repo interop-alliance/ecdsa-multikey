@@ -1,6 +1,6 @@
 # @interop/ecdsa-multikey ChangeLog
 
-## 2.4.0 - TBD
+## 2.4.0 - 2026-09-05
 
 ### Changed
 
