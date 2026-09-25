@@ -1,5 +1,11 @@
 # @interop/ecdsa-multikey ChangeLog
 
+## 2.4.1 - TBD
+
+### Changed
+
+- Update to latest `@interop/data-integrity-core@8.8.0`.
+
 ## 2.4.0 - 2026-09-05
 
 ### Changed
